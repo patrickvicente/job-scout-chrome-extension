@@ -1,0 +1,1142 @@
+{
+    "compensation": {
+      "currencies": [
+        {
+          "symbol": "$",
+          "code": "USD",
+          "floor": 20e3,
+          "ceiling": 1e6
+        },
+        {
+          "symbol": "£",
+          "code": "GBP",
+          "floor": 20e3,
+          "ceiling": 1e6
+        },
+        {
+          "symbol": "€",
+          "code": "EUR",
+          "floor": 20e3,
+          "ceiling": 1e6
+        },
+        {
+          "symbol": "CA$",
+          "code": "CAD",
+          "floor": 30e3,
+          "ceiling": 1.5e6
+        },
+        {
+          "symbol": "AU$",
+          "code": "AUD",
+          "floor": 30e3,
+          "ceiling": 1.5e6
+        }
+      ],
+      "currencyPatterns": ["({SYMBOL}|{CODE})"],
+      "currencyScore": 15,
+      "currencyScorePatterns": [
+        "{CURRENCY_PATTERN}\\s*{NUMBER}",
+        "{NUMBER}\\s*{CURRENCY_PATTERN}"
+      ],
+      "multipliers": {
+        "\\s*(k(\\W+|$)|thousand)": 1e3,
+        "\\s+000": 1e3,
+        "\\s*(m(\\W+|$)|million)": 1e6,
+        "\\s*MM(\\W+|$)": 1e6,
+        "\\s*(b(\\W+|$)|billion)": 1e9,
+        "\\s*(t(\\W+|$)|trillion)": 1e12
+      },
+      "numContextWords": 7,
+      "numberIndexPattern": "\\d[\\d,.]+",
+      "numberPattern": "([\\d,]+(\\.\\d+)?)({MULTIPLIERS})?",
+      "periods": [
+        ["year", "y\\W", "yr\\W", "annual", "annually"],
+        ["month", "m\\W", "mth\\W"],
+        ["week", "w\\W", "wk\\W"],
+        ["hour", "h\\W", "hr\\W"]
+      ],
+      "periodsInYear": {
+        "hour": 2000,
+        "week": 50,
+        "month": 12,
+        "year": 1,
+        "": 1
+      },
+      "periodPatterns": [
+        "(^|\\W+){PERIOD}ly(\\W+|$)",
+        "(^|\\W+)(an?|per|/)\\s+({SHORTS})(\\W+|$)",
+        "(^|\\W+)({SHORTS})(\\W+|$)"
+      ],
+      "periodScore": 2,
+      "replaces": {
+        "job\\s*id:\\s*\\S+": "",
+        "hour\\s+shift": ""
+      },
+      "scoreThreshold": 10,
+      "scores": {
+        "between\\W+{NUMBER}\\W+([&]|and)\\W+{NUMBER}": 7,
+        "{NUMBER}\\s*(to|[—–-]+|[&]|and)\\s*{NUMBER}": 7,
+        "start(s|ing)\\s+at\\W+{NUMBER}": 7,
+        "(^|\\W+)(salary|compensation|pay|rate)(\\W+|$)": 5,
+        "{NUMBER}\\s*\\%": -5,
+        "\\W*((time|days)\\s+off|holidays)\\W*": -5,
+        "countries": -5,
+        "education": -5,
+        "employees": -5,
+        "experience": -5,
+        "languages": -5,
+        "linkedin est\\.": -5,
+        "match": -5,
+        "sign\\s*on": -5,
+        "years?\\s*of": -5,
+        "years?\\s+old": -5,
+        "401\\s*\\(?k\\)?": -7,
+        "(lbs|kg)": -10
+      }
+    },
+    "maintenance": {
+      "job": "",
+      "contact": "",
+      "company": ""
+    },
+    "mutationObservers": {
+      "monster.com/jobs/": "[class*=JobContainer]",
+      "glassdoor.(com|sg|ca|co.uk)/Job/": "[class*=pageContainer]"
+    },
+    "ignore": [],
+    "jobAppLikeness": {
+      "maxDistance": {
+        "left": 32,
+        "top": 32
+      },
+      "threshold": 15,
+      "knownUrls": [
+        ".*\\.breezy\\.hr/p/.*/apply",
+        "app\\.dover\\.io/apply/.*/.*",
+        "apply\\.workable\\.com/.*/j/.*/apply",
+        "boards\\.greenhouse\\.io/.*/jobs/.*",
+        "careers\\.hireology\\.com/.*/.*/description",
+        "jobs\\.jobvite\\.com/.*/job/.*",
+        "jobs\\.smartrecruiters\\.com/oneclick-ui/company/.*/publication/.*",
+        ".*\\.bamboohr\\.com/jobs/view.php\\?id=.*",
+        "dynamitejobs\\.com/apply/.*"
+      ],
+      "preventOn": ["linkedin\\.com/jobs"],
+      "matchConfigs": {
+        "goodHeading": {
+          "score": 10,
+          "tags": "h1,h2,h3,h4,h5,h6",
+          "matches": [
+            "apply for this (?:job|position)",
+            "submit(?:\\syour)? application"
+          ]
+        },
+        "okayHeading": {
+          "score": 5,
+          "tags": "h1,h2,h3,h4,h5,h6",
+          "matches": ["$\\s*apply\\s*^"]
+        },
+        "contactFields": {
+          "score": 5,
+          "tags": "label",
+          "matches": ["(?:(?:first|last|full)\\s+)?name"]
+        },
+        "commonFields": {
+          "score": 10,
+          "tags": "label",
+          "matches": ["work (?:history|experience)", "cover letter"]
+        },
+        "linkedInField": {
+          "score": 5,
+          "tags": "label",
+          "matches": ["linkedin (?:profile|url)"]
+        },
+        "resumeUploadMatch": {
+          "score": 10,
+          "tags": "label,strong,button",
+          "matches": ["\\b(?:resume|cv)\\b"]
+        },
+        "goodSubmitBtn": {
+          "score": 10,
+          "tags": "button, input[type='button']",
+          "matches": ["(send|submit)\\s+((your)\\s+)?application"]
+        },
+        "okaySubmitBtn": {
+          "score": 5,
+          "tags": "button, input[type='button']",
+          "matches": ["apply", "(?:save(?: and continue)?|continue)", "next"]
+        }
+      }
+    },
+    "scraper": {
+      "jobs.ashbyhq.com": {},
+      "jobs.ashbyhq.com/*/*": {
+        "job": {
+          "role": "h1",
+          "company": [
+            ["domSelect", "img[class*=navLogo]"],
+            ["domGetAttribute", "alt"],
+            "defaultString"
+          ],
+          "description": "[class*=descriptionText]",
+          "location": "h2:contains('Location') + p",
+          "compensation": [
+            ["jqSelect", "h2:contains('Compensation')"],
+            "jqParent",
+            "jqText",
+            "defaultString"
+          ]
+        }
+      },
+      "bcwnetwork.com/": {},
+      "bcwnetwork.com/job/": {
+        "job": {
+          "role": ".entry-title",
+          "company": ".company .name strong",
+          "description": ".job_description",
+          "location": ".job-listing-meta .location"
+        }
+      },
+      "blackcareernetwork.com/": {},
+      "blackcareernetwork.com/jobs": {
+        "job": {
+          "role": ".js-view-blocks-slot .job-slot-title",
+          "company": ".js-view-blocks-slot .fa-building + a",
+          "description": ".js-view-blocks-slot .main-job-description",
+          "location": [
+            ["domSelect", ".js-view-blocks-slot .fa-map-marker-alt"],
+            "domNextSibling",
+            "domText",
+            "defaultString"
+          ]
+        }
+      },
+      "blacksintechnology.net/": {},
+      "blacksintechnology.net/job/": {
+        "job": {
+          "role": ".post__title",
+          "company": ".company .name strong",
+          "description": ".job_description",
+          "location": ".job-listing-meta .location"
+        }
+      },
+      "blackistechjobs.com/": {},
+      "blackistechjobs.com/jobs/": {
+        "job": {
+          "role": ".jobDetail-headerIntro h1",
+          "company": ".jobDetail-headerIntro a",
+          "description": ".job-body",
+          "location": ".jobDetail-headerIntro .fa-map-marker-alt + span"
+        }
+      },
+      "careerbuilder.com/": {},
+      "careerbuilder.com/jobs": {
+        "job": {
+          "role": "#jdp-pane h2.jdp_title_header",
+          "company": "#jdp-pane .data-details > span:nth-child(1)",
+          "description": "#jdp-pane #jdp_description",
+          "location": "#jdp-pane .data-details > span:nth-child(2)"
+        }
+      },
+      "linkedin.com/": {},
+      "idealist.org/": {},
+      "idealist.org/.*/.*-job/": {
+        "job": {
+          "role": "[data-qa-id='listing-name']",
+          "company": "[data-qa-id='listing-name'] + div",
+          "compensation": "[aria-label='money icon'] + div",
+          "location": "[aria-label='location-filled icon'] + div"
+        }
+      },
+      "indeed.com/": {},
+      "indeed.com/(viewjob|jobs|\\?.*vjk=)": {
+        "job": {
+          "role": [
+            ["jqSelect", "#vjs-container-iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            [
+              "jqSelect",
+              ".jobsearch-JobInfoHeader-title,#vjs-jobinfo #vjs-jobtitle"
+            ],
+            "jqText",
+            ["strReplace", "\\s+-\\s+job\\s+post", "", "i"],
+            "defaultString"
+          ],
+          "company": [
+            ["jqSelect", "#vjs-container-iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            [
+              "jqSelect",
+              ".jobsearch-CompanyReview--heading,[data-company-name],#vjs-cn"
+            ],
+            ["jqGet", 0],
+            "domText",
+            "defaultString"
+          ],
+          "compensation": [
+            ["jqSelect", "#vjs-container-iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", "#salaryInfoAndJobType,#jobDescriptionText"],
+            "jqText",
+            "defaultString"
+          ],
+          "description": [
+            ["jqSelect", "#vjs-container-iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", "#jobDescriptionText,#vjs-content"],
+            "jqText",
+            "defaultString"
+          ],
+          "location": [
+            ["jqSelect", "#vjs-container-iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            [
+              "jqSelect",
+              ".jobsearch-JobInfoHeader-subtitle > div:nth-child(2), .jobsearch-CompanyInfoContainer > div > div > div > div:nth-child(2),#vjs-loc"
+            ],
+            ["jqGet", 0],
+            "domText",
+            "defaultString"
+          ]
+        }
+      },
+      "indeed.com/cmp/.+/(jobs|\\?.*jk=)": {
+        "job": {
+          "role": "[data-testid='jobDetailTitle']",
+          "company": [
+            ["jqSelect", "[data-testid='jobDetailSubtitle']"],
+            "jqText",
+            "defaultString",
+            ["strSplit", " - "],
+            ["arrGet", 0]
+          ],
+          "compensation": [
+            ["jqSelect", "[data-testid='jobDetailSubtitle']+span"],
+            "jqText",
+            "defaultString"
+          ],
+          "description": [
+            ["jqSelect", "[data-testid='jobDetailDescription']"],
+            "jqText",
+            "defaultString"
+          ],
+          "location": [
+            ["jqSelect", "[data-testid='jobDetailSubtitle']"],
+            "jqText",
+            "defaultString",
+            ["strSplit", " - "],
+            ["arrGet", 1]
+          ]
+        }
+      },
+      "google.com/.*jobs-detail": {
+        "job": {
+          "role": "c-wiz [data-hveid]:not([aria-hidden='true']) h1",
+          "company": [
+            ["jqSelect", "c-wiz [data-hveid]:not([aria-hidden='true']) h1 + div"],
+            "jqText",
+            "defaultString",
+            ["strSplit", "\\s+•\\s+"],
+            ["arrGet", 0],
+            "defaultString"
+          ],
+          "description": "c-wiz [data-hveid]:not([aria-hidden='true']) div > h3:last-of-type ~ *",
+          "location": [
+            ["jqSelect", "c-wiz [data-hveid]:not([aria-hidden='true']) h1 + div"],
+            "jqText",
+            "defaultString",
+            ["strSplit", "\\s+•\\s+"],
+            ["arrGet", 1],
+            "defaultString",
+            ["strReplace", "^via .*", ""]
+          ]
+        }
+      },
+      "governmentjobs.com/": {},
+      "governmentjobs.com/jobs/": {
+        "job": {
+          "description": "#details-info"
+        }
+      },
+      "monster.com/": {},
+      "monster.com/jobs/": {
+        "job": {
+          "role": "[class*=JobContainer] [data-testid=jobTitle]",
+          "company": "[class*=JobContainer] [data-testid=company]",
+          "description": "[class*=JobContainer] [class*=DescriptionContainer]",
+          "location": "[class*=JobContainer] [data-testid=jobDetailLocation]"
+        }
+      },
+      "monster.com/job-openings/": {
+        "job": {
+          "role": "[class*=JobViewHeaderContainer] [class*=JobViewHeaderTitle]",
+          "company": "[class*=JobViewHeaderContainer] [class*=JobViewHeaderCompany]",
+          "description": "[class*=DescriptionContainer]",
+          "location": "[class*=JobViewHeaderContainer] [class*=JobViewHeaderLocation]"
+        }
+      },
+      "fairygodboss.com/": {},
+      "fairygodboss.com/jobs/": {
+        "job": {
+          "role": "[data-qa='Jobs-Page-title']",
+          "company": "[data-qa='Jobs-Page-company-name']",
+          "location": "[data-qa='Jobs-Page-location']",
+          "description": "[class*=MarkDownBody]"
+        }
+      },
+      "fairygodboss.com/company/": {
+        "company": {
+          "company": ".header-info .company-name",
+          "location": [
+            ["jqSelect", ".hq-and-size"],
+            "jqText",
+            ["strReplace", "Headquarters:\\s*(.*)\\s*(\\(.*)\\)?│.*$", "$1"],
+            "defaultString"
+          ],
+          "url": [
+            ["jqSelect", ".company-details .external-url a"],
+            ["jqAttr", "href"],
+            "strTrim"
+          ],
+          "company_size": [
+            ["jqSelect", ".hq-and-size"],
+            "jqText",
+            ["strReplace", "^.*│(.*)$", "$1"],
+            "defaultString"
+          ]
+        }
+      },
+      "glassdoor.(com|sg|ca|co.uk)/": {},
+      "glassdoor.(com|sg|ca|co.uk)/Job/": {
+        "job": {
+          "jobId": [
+            ["domSelect", "[id^='jd-job-title']"],
+            ["domGetAttribute", "id"],
+            "defaultString"
+          ],
+          "role": "[class*=jobDetailsContainer] [id^='jd-job-title']",
+          "company": "[class*=jobDetailsContainer] [class*=EmployerProfile] [class*=heading]",
+          "description": "[class*=jobDetailsContainer] [class^=JobDetails_jobDescription]",
+          "location": "[class*=jobDetailsContainer] [data-test='location']"
+        }
+      },
+      "glassdoor.(com|sg|ca|co.uk)/job-listing/": {
+        "job": {
+          "role": "[class*=jobDetailsContainer] [id^='jd-job-title']",
+          "company": "[class*=jobDetailsContainer] [class*=EmployerProfile] [class*=heading]",
+          "description": "[class*=jobDetailsContainer] [class^=JobDetails_jobDescription]",
+          "location": "[class*=jobDetailsContainer] [class^=JobDetails_location]"
+        }
+      },
+      "goodgigs.app/": {},
+      "goodgigs.app/job/": {
+        "job": {
+          "role": [
+            ["jqSelect", ".FloatingGroup"],
+            ["jqEq", 1],
+            ["jqSelect", ".content"],
+            ["jqEq", 0],
+            "jqText",
+            ["strReplace", "\\s+at\\s+.*$", "", "i"],
+            "defaultString"
+          ],
+          "company": [
+            ["jqSelect", ".FloatingGroup"],
+            ["jqEq", 1],
+            ["jqSelect", ".content"],
+            ["jqEq", 0],
+            "jqText",
+            ["strReplace", ".*\\s+at\\s+(.*)$", "$1", "i"],
+            "defaultString"
+          ],
+          "location": [
+            ["jqSelect", ".FloatingGroup"],
+            ["jqEq", 1],
+            ["jqSelect", ".content"],
+            ["jqEq", 1],
+            "jqText",
+            "defaultString"
+          ],
+          "description": [
+            ["jqSelect", "#description"],
+            "jqParent",
+            "jqParent",
+            "jqParent",
+            ["jqSelect", ".content"],
+            ["jqEq", 2],
+            ["jqTriggerIfIncludes", "Read more", "click"],
+            "clear",
+            ["jqSelect", "#description"],
+            "jqText",
+            "defaultString"
+          ]
+        }
+      },
+      "powertofly.com/": {},
+      "powertofly.com/jobs/": {
+        "job": {
+          "role": [["domSelect", ".job.title"], "domText", "defaultString"],
+          "company": ".company-name > a",
+          "location": ".header .location",
+          "description": ".editorial-job-description, .about"
+        }
+      },
+      "careercontessa.com/": {},
+      "careercontessa.com/jobs/": {
+        "job": {
+          "role": [["domSelect", ".card-title"], "domText", "defaultString"],
+          "company": [["domSelect", ".card-body h6"], "domText", "defaultString"],
+          "location": [
+            ["domSelect", ".card-text > div"],
+            "domText",
+            "defaultString"
+          ],
+          "description": "wysiwyg-post-container"
+        }
+      },
+      "womenwhocode.com/": {},
+      "womenwhocode.com/jobs": {
+        "job": {
+          "role": ".job-details .title",
+          "company": ".job-details .company",
+          "compensation": ".job-details .salary-range, .job-details .salary-time-frame",
+          "location": ".job-details .location",
+          "description": ".about-us-container,.what-you-will-do-container,.benefits-container,.hiring-process-container"
+        }
+      },
+      "swe.org/": {},
+      "swe.org/jobs": {
+        "job": {
+          "role": ".job-details-inner .job-details .job-title",
+          "company": ".job-details-inner .job-details .job-company-row",
+          "location": ".job-details-inner .job-details .company-location",
+          "description": ".job-desc"
+        }
+      },
+      "hiretechladies.com/": {},
+      "hiretechladies.com/j/": {
+        "job": {
+          "role": [["jqSelect", "h2"], ["jqGet", 1], "domText", "defaultString"],
+          "company": [
+            ["jqSelect", "h2"],
+            ["jqGet", 0],
+            "domText",
+            "defaultString"
+          ],
+          "location": "._117eBJk100FETv3GWRdNAd",
+          "description": "._1uQmIC-WtVbBehx76DtMOs"
+        }
+      },
+      "womenintechnology-jobs.careerwebsite.com/": {},
+      "womenintechnology-jobs.careerwebsite.com/jobs/": {
+        "job": {
+          "role": ".job-details-inner .job-details .job-title",
+          "company": ".job-details-inner .job-details .job-company-row",
+          "location": ".job-details-inner .job-details .company-location",
+          "description": ".job-desc"
+        }
+      },
+      "girlboss.com/": {},
+      "jobs.girlboss.com/[^/]+": {
+        "job": {
+          "role": ".job-post-details__title",
+          "company": [
+            ["domSelect", ".cardCompany__image"],
+            ["domGetAttribute", "alt"],
+            "defaultString"
+          ],
+          "location": "span[locations],span[remote-locations]",
+          "description": ".job-description-html"
+        }
+      },
+      "careers.iawomen.com/": {},
+      "careers.iawomen.com/jobs/": {
+        "job": {
+          "role": ".job-slot-title",
+          "company": [
+            ["domSelect", ".job-titles .fa-building"],
+            "domNextSibling",
+            "domNextSibling",
+            "domText",
+            "defaultString"
+          ],
+          "location": [
+            ["domSelect", ".job-titles .fa-map-marker-alt"],
+            "domNextSibling",
+            "domText",
+            "defaultString"
+          ],
+          "description": ".job-description"
+        }
+      },
+      "clearancejobs.com/": {},
+      "clearancejobs.com/jobs/": {
+        "job": {
+          "role": "h1",
+          "company": ".job-location",
+          "location": ".job-view__location-name",
+          "description": ".job-description"
+        }
+      },
+      "surgewomen.io/": {},
+      "surgewomen.io/jobs/": {
+        "job": {
+          "role": [
+            ["jqSelect", ".css-dc8j4k"],
+            ["jqGet", 0],
+            "domText",
+            "defaultString"
+          ],
+          "company": [
+            ["jqSelect", ".css-dc8j4k"],
+            ["jqGet", 1],
+            "domText",
+            "defaultString"
+          ],
+          "location": ".css-1822jpt",
+          "description": ".css-18ny73u"
+        }
+      },
+      "ffcjobboard.pory.app/": {
+        "job": {
+          "role": [["jqSelect", "p"], ["jqGet", 0], "domText", "defaultString"],
+          "company": [
+            ["jqSelect", "p"],
+            ["jqGet", 1],
+            "domText",
+            "defaultString"
+          ],
+          "location": "span[locations],span[remote-locations]",
+          "description": ".job-description-html"
+        }
+      },
+      "themuse.com/": {},
+      "themuse.com/jobs/": {
+        "job": {
+          "role": "[class*=jobHeaderTitle]",
+          "company": "[class*=jobHeaderCompanyName]",
+          "location": "[class*=jobHeaderLocation]",
+          "description": "[class*=jobBodyContainer]"
+        }
+      },
+      "themuse.com/search": {
+        "job": {
+          "role": [
+            ["jqSelect", "[title=JDP]"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", "[class*=jobHeaderTitle]"],
+            "jqText",
+            "defaultString"
+          ],
+          "company": [
+            ["jqSelect", "[title=JDP]"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", "[class*=jobHeaderCompanyName]"],
+            "jqText",
+            "defaultString"
+          ],
+          "location": [
+            ["jqSelect", "[title=JDP]"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", "[class*=jobHeaderLocation]"],
+            "jqText",
+            "defaultString"
+          ],
+          "description": [
+            ["jqSelect", "[title=JDP]"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", "[class*=jobBodyContainer]"],
+            "jqText",
+            "defaultString"
+          ]
+        }
+      },
+      "weworkremotely.com/": {},
+      "weworkremotely.com/(remote-jobs|listings)/": {
+        "job": {
+          "role": ".lis-container__header__hero__company-info__title",
+          "company": ".lis-container__job__sidebar__companyDetails__info__title",
+          "description": ".lis-container__job__content__description"
+        }
+      },
+      "elpha.com/": {},
+      "elpha.com/companies/.*/(jobs|positions)/": {
+        "job": {
+          "role": [
+            ["jqSelect", ".positions-header"],
+            "jqText",
+            ["strReplace", "\\s+at\\s+.*", "", "i"],
+            "defaultString"
+          ],
+          "company": [
+            ["jqSelect", "[class*=backButtonText]"],
+            "jqText",
+            ["strReplace", "Back\\s+to\\s+all\\s+jobs\\s+at\\s+(.*)", "$1", "i"],
+            "defaultString"
+          ],
+          "location": [
+            ["jqSelect", ".positions-details"],
+            "jqText",
+            ["strReplace", "/.*", "", "i"],
+            "defaultString"
+          ],
+          "description": ".positions-description"
+        }
+      },
+      "usajobs.gov/": {},
+      "usajobs.gov/job/": {
+        "job": {
+          "role": "#job-title",
+          "company": ".usajobs-joa-banner__dept",
+          "location": ".usajobs-joa-locations__city:first",
+          "description": "#summary,#duties,#requirements"
+        }
+      },
+      "blackjobs.com/": {},
+      "blackjobs.com/jobs/": {
+        "job": {
+          "role": ".jobDetail-headerIntro h1",
+          "company": ".jobDetail-headerIntro a",
+          "location": ".jobDetail-headerIntro .fa-map-marker-alt + span",
+          "description": ".job-body"
+        }
+      },
+      "blacktechjobs.com/": {},
+      "blacktechjobs.com/jobs/": {
+        "job": {
+          "company": ".jobDetail-headerIntro a",
+          "role": ".jobDetail-headerIntro h1:first-child",
+          "location": ".jobDetail-headerIntro .fa-map-marker-alt + span",
+          "description": ".job-body"
+        }
+      },
+      "blacktechtalent.org": {},
+      "blacktechtalent.org/job/": {
+        "job": {
+          "company": ".job-company",
+          "role": ".page-title",
+          "location": ".location",
+          "description": ".job-overview"
+        }
+      },
+      "builtin.com": {},
+      "ziprecruiter.com": {},
+      "ziprecruiter.com/c/.*/Job/": {
+        "job": {
+          "company": ".job_sub .sub_item:nth-child(1), .job_company",
+          "role": ".job_title",
+          "location": ".job_sub .sub_item:nth-child(2), .job_location",
+          "description": ".job_description"
+        }
+      },
+      "ziprecruiter.com/jobs-search?.*(lk=|lvk=)": {
+        "job": {
+          "role": "[data-testid=right-pane] h1",
+          "company": "[data-testid=right-pane] h1 ~ a",
+          "location": "[data-testid=right-pane] h1 ~ div > p",
+          "description": "[data-testid=right-pane] h2 ~ div"
+        }
+      },
+      "ziprecruiter.com/Jobs/.*(lk=|lvk=)": {
+        "job": {
+          "role": "[data-testid=right-pane] h1",
+          "company": "[data-testid=right-pane] h1 ~ a",
+          "location": "[data-testid=right-pane] h1 ~ div > p",
+          "description": "[data-testid=right-pane] h2 ~ div"
+        }
+      },
+      "ziprecruiter.com/(ojob|jobs)/": {
+        "job": {
+          "role": "h1.job_title",
+          "company": ".hiring_company",
+          "location": ".hiring_location",
+          "description": ".job_description"
+        }
+      },
+      "dice.com": {},
+      "dice.com/jobs/detail/": {
+        "job": {
+          "company": "#hiringOrganizationName",
+          "role": ".jobTitle",
+          "location": ".location",
+          "description": "#jobdescSec"
+        }
+      },
+      "dice.com/job-detail/": {
+        "job": {
+          "company": "[data-cy=companyNameLink]",
+          "role": "[data-cy=jobTitle]",
+          "location": "[data-cy=companyLocation]",
+          "description": "[data-cy=skillsList],[data-cy=jobDescription]"
+        }
+      },
+      "unicornhunt.io": {},
+      "unicornhunt.io/jobs/": {
+        "job": {
+          "company": ".job-full__company_name",
+          "role": ".job-full__role_name",
+          "location": ".job-full__role_name",
+          "description": ".job-full__description-inner"
+        }
+      },
+      "jopwell.com/": {},
+      "jopwell.com/jobs/": {
+        "job": {
+          "company": "a .MuiTypography-caption",
+          "role": ".MuiGrid-container:first-child .MuiGrid-item:last-child .MuiTypography-h3",
+          "location": ".MuiGrid-container:first-child > .MuiGrid-item:last-child > span.MuiTypography-caption",
+          "description": ".MuiCollapse-wrapperInner"
+        }
+      },
+      "lever.co/": {},
+      "jobs.lever.co/.*/": {
+        "job": {
+          "company": [
+            ["jqSelect", ".main-footer-text p:first-child a"],
+            "jqText",
+            ["strReplace", " Home Page", "", "i"],
+            "strTrim",
+            "defaultString"
+          ],
+          "role": ".posting-headline h2",
+          "location": [
+            ["jqSelect", ".sort-by-time"],
+            "jqText",
+            ["strReplace", " /", "", "i"],
+            "strTrim",
+            "defaultString"
+          ],
+          "description": ".section-wrapper:nth-child(2)"
+        }
+      },
+      "diversity.com": {},
+      "diversity.com/career/": {
+        "job": {
+          "company": "td.vac_item_employer + td",
+          "role": ".search-job-result .page-title",
+          "location": ".vac_item_city + td, .vac_item_state + td, .vac_item_country + td",
+          "description": ".job_desc_td"
+        }
+      },
+      "diversityjobs.com": {},
+      "diversityjobs.com/career/": {
+        "job": {
+          "company": ".job__fields td.employer a",
+          "role": ".job-title",
+          "location": ".job__fields td.address .googlePlace",
+          "description": ".job_desc_td"
+        }
+      },
+      "techjobsforgood.com": {},
+      "techjobsforgood.com/jobs/": {
+        "job": {
+          "company": ".company-link",
+          "role": [
+            ["domSelect", "[itemprop=\"title\"] > *:first-child"],
+            "domPrevSibling",
+            "domText",
+            "defaultString"
+          ],
+          "location": "span[itemprop=\"jobLocation\"]",
+          "description": "div[itemprop=\"description\"]"
+        }
+      },
+      "zippia.com": {},
+      "zippia.com/.*?modal-dlp=true": {
+        "job": {
+          "company": ".z-leading-base:first-child a",
+          "role": ".JobTitle",
+          "location": ".z-ml-12:nth-child(2) .z-text-secondary",
+          "description": "[class*=description_text__]"
+        }
+      },
+      "zippia.com/.*jobs/": {
+        "job": {
+          "company": "[data-jaa-field='zippia-job-company']",
+          "role": "[data-jaa-field='zippia-job-title']",
+          "description": "[data-jaa-field='zippia-job-description']",
+          "location": "[data-jaa-field='zippia-job-location']"
+        }
+      },
+      "[\\w-]+.pallet.com": {},
+      "[\\w-]+.pallet.com/jobs/": {
+        "job": {
+          "company": ".css-1k4xco7.e12udjsv4 .css-1ui3zhl",
+          "role": ".e69hqq14 .css-1ui3zhl",
+          "location": ".css-y41vye.epr3g491:nth-child(1)",
+          "description": ".css-1vv0zus.e1j14kzf0"
+        }
+      },
+      "irelaunch.com": {},
+      "irelaunch.com/job/": {
+        "job": {
+          "company": "#lblOutEmployer",
+          "role": "#lblOutTitle",
+          "location": "#lblOutLocation",
+          "description": "#lblOutDescription"
+        }
+      },
+      "macslist.org": {},
+      "macslist.org/job/": {
+        "job": {
+          "role": "#lblOutTitle",
+          "company": "#lblOutEmployer",
+          "location": "#lblOutLocation",
+          "description": "#lblOutDescription"
+        }
+      },
+      "careers-reachire.icims.com": {},
+      "careers-reachire.icims.com/jobs": {
+        "job": {
+          "role": [
+            ["jqSelect", "#icims_content_iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", ".iCIMS_Header"],
+            "jqText",
+            "defaultString",
+            ["strSplit", " - "],
+            ["arrGet", 0]
+          ],
+          "company": [
+            ["jqSelect", "#icims_content_iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", ".iCIMS_Header"],
+            "jqText",
+            "defaultString",
+            ["strSplit", " - "],
+            ["arrGet", 1]
+          ],
+          "location": [
+            ["jqSelect", "#icims_content_iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", ".col-xs-6.header.left"],
+            "jqContents",
+            ["jqGet", 3],
+            "domText",
+            "defaultString"
+          ],
+          "description": [
+            ["jqSelect", "#icims_content_iframe"],
+            ["jqIfNotLength", "body"],
+            "jqContents",
+            ["jqSelect", ".iCIMS_JobContent"],
+            "jqHtml"
+          ]
+        }
+      },
+      "myworkdayjobs.com": {},
+      "myworkdayjobs.com/.*/(Workday/details|job)/": {
+        "job": {
+          "role": "[data-automation-id=jobPostingHeader]",
+          "company": [
+            ["domSelect", "script[type='application/ld+json']"],
+            "domText",
+            [
+              "strReplace",
+              "^.*\"hiringOrganization\".*?\"name\"\\s*:\\s*\"(.*?)\",.*$",
+              "$1",
+              "smg"
+            ],
+            "defaultString"
+          ],
+          "location": [
+            ["jqSelect", "[data-automation-id=locations] dd"],
+            ["jqGet", 0],
+            "domText",
+            "defaultString"
+          ],
+          "description": "[data-automation-id=jobPostingDescription]"
+        }
+      },
+      "(job-)?boards.greenhouse.io": {},
+      "(job-)?boards.greenhouse.io/(.*/jobs/|embed/job_app)": {
+        "job": {
+          "role": ".app-title, .job__title h1",
+          "company": [
+            ["jqSelect", ".company-name"],
+            ["jqIfNotLength", "title"],
+            "jqText",
+            ["strReplace", "^.*\\s*at\\s*", ""],
+            "defaultString"
+          ],
+          "location": ".location, .job__location",
+          "description": "#content, .job__description"
+        }
+      },
+      "wellfound.com": {},
+      "wellfound.com/jobs/\\d+-": {
+        "job": {
+          "role": "[data-test*='Listing'] h1:first-of-type, [data-test='JobDetail'] h1:first-of-type",
+          "company": "[data-test*='Listing'] h2:first-of-type, [data-test='Masthead'] h3:first-of-type",
+          "location": "[data-test*='Listing'] h3:contains('Location') + div, [data-test='JobDetail'] dt:contains('Location') + dd",
+          "description": "[data-test*='Listing'] #job-description, [data-test='JobDetail'] [class^='styles_description']",
+          "compensation": "[data-test*='Listing'] .text-lg.text-gray-800, [data-test='JobDetail'] [class^='styles_subheader']"
+        }
+      },
+      "wellfound.com/jobs\\?job_listing_id=": {
+        "job": {
+          "role": "[data-test='JobListingSlideIn'] .text-center.font-\\[700\\]",
+          "company": "[data-test='JobListingSlideIn'] .text-lg.font-\\[500\\]:nth-child(1)",
+          "location": "[data-test='JobListingSlideIn'] span:contains('Location') + div",
+          "description": "[data-test='JobListingSlideIn'] [class^='styles_description']",
+          "compensation": "[data-test='JobListingSlideIn'] .text-lg.font-\\[500\\]:nth-child(2)"
+        }
+      },
+      "seek.com.au/job/": {
+        "job": {
+          "title": "[data-automation='job-detail-title']",
+          "company": "[data-automation='advertiser-name']",
+          "location": [
+            ["jqSelect", "[data-sticky='job-details-page'] span:first-of-type"],
+            ["jqGet", 1],
+            "domText",
+            "defaultString"
+          ],
+          "description": "[data-automation='jobAdDetails']"
+        }
+      },
+      "simplyhired.com/": {},
+      "simplyhired.com/(search|job)": {
+        "job": {
+          "role": "[data-testid='viewJobTitle'],.viewjob-headerV2 .viewjob-jobTitle",
+          "company": "[data-testid='viewJobCompanyName'] [data-testid='detailText'], .viewjob-header-companyInfo",
+          "location": "[data-testid='viewJobCompanyLocation'] [data-testid='detailText']",
+          "description": "[data-testid='viewJobBodyJobFullDescriptionContent']"
+        }
+      },
+      "simplyhired.com/saved": {
+        "job": {
+          "role": ".viewjob-headerV2 .viewjob-jobTitle",
+          "company": [
+            ["domSelect", ".viewjob-header-companyInfo .fa-building"],
+            "domNextSibling",
+            "domText",
+            "defaultString"
+          ],
+          "location": ".viewjob-header-companyInfo .viewjob-labelWithIcon:last-child",
+          "description": "[data-testid='VJ-section-content-jobDescription']"
+        }
+      },
+      "jobs.smartrecruiters.com/": {},
+      "jobs.smartrecruiters.com/.*/.*": {
+        "job": {
+          "role": "h1.job-title",
+          "company": [
+            ["domSelect", ".jobad-header .logo img"],
+            ["domGetAttribute", "alt"],
+            ["strReplace", "\\s+logo\\s*$", "", "i"],
+            "defaultString"
+          ],
+          "location": "[class*='job-location__place']",
+          "description": "[itemprop='description']"
+        }
+      },
+      "teamtailor.com/": {},
+      "teamtailor.com/jobs/": {
+        "job": {
+          "role": [["domSelect", "h1"], "domText", "defaultString"],
+          "company": [
+            ["domSelect", "header"],
+            ["domSelect", "img"],
+            ["domGetAttribute", "alt"],
+            ["strReplace", "\\s+career site\\s*$", "", "i"],
+            "defaultString"
+          ],
+          "location": [
+            ["domSelect", "h1"],
+            "domPrevElementSibling",
+            "domText",
+            "strTrim",
+            ["strSplit", "·"],
+            ["arrGet", 1],
+            "defaultString"
+          ],
+          "description": "div.font-company-body"
+        }
+      },
+      "recruiting.paylocity.com/": {},
+      "recruiting.paylocity.com/recruiting/jobs/Details/": {
+        "job": {
+          "role": ".job-preview-title",
+          "company": "#LayoutLogoName",
+          "location": ".preview-location",
+          "description": ".job-preview-details"
+        }
+      },
+      "zohorecruit.com/": {},
+      "zohorecruit.com/jobs/Careers/": {
+        "job": {
+          "role": "h1",
+          "company": [
+            ["domSelect", ".cw-jobheader-info > p:first-child"],
+            "domText",
+            ["strReplace", "\\|.*$", "", "i"],
+            "defaultString"
+          ],
+          "location": [
+            ["domSelect", ".cw-fa-globe-icon"],
+            "domText",
+            "defaultString"
+          ],
+          "description": ".cw-jobdescription"
+        }
+      },
+      "careerplug.com/": {},
+      "careerplug.com/jobs/": {
+        "job": {
+          "description": ".job-description-container"
+        }
+      },
+      "jobvite.com/": {},
+      "jobvite.com/.*/job/": {
+        "job": {
+          "company": [
+            ["jqSelect", ".jv-logo img"],
+            ["jqAttr", "alt"],
+            ["jqIfNotLength", ".jv-logo"],
+            "jqText",
+            ["strReplace", "\\s+logo.*$", "", "i"],
+            "defaultString"
+          ]
+        }
+      },
+      "(\\w+\\.)?jora.com/job/": {
+        "job": {
+          "title": "h1.job-title",
+          "company": "span.company",
+          "location": "span.location",
+          "salary": "div.badge.-default-badge .content",
+          "description": "div#job-description-container",
+          "date_posted": "span.listed-date"
+        }
+      },
+      "applytojob.com/": {},
+      "applytojob.com/apply/": {
+        "job": {
+          "role": ".job-header h1",
+          "company": ".brand-text",
+          "location": "[title='Location']",
+          "description": "#job-description"
+        }
+      }
+    },
+    "aaSiteSupportWarnings": [
+      {
+        "urlMatch": "myworkdayjobs\\.com/.*/.*/job/.*/apply",
+        "message": "Please note that certain functionality on the Workday website may not work with Auto apply, including filling out the \"Work Experience\" fields."
+      }
+    ]
+  }
+  

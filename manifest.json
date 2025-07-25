@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Job Hunter",
+  "version": "1.0",
+  "description": "Extracts job data from job boards",
+  "permissions": ["activeTab", "scripting", "sidePanel"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.seek.com.au/*", "*://*.jora.com/*", "*://*.linkedin.com/jobs/*"],
+      "js": ["content.js"],
+      "type": "module"
+    }
+  ],
+  "side_panel": {
+    "default_path": "dist/sidepanel.html"
+  },
+  "action": {
+    "default_title": "Open Job Hunter Side Panel"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["jobs_config.json"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 
