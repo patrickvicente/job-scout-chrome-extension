@@ -14,6 +14,9 @@ const STATUS_OPTIONS = [
 const CATEGORY_OPTIONS = [
   { label: "Other", value: "other" },
   { label: "Software Engineer", value: "software-engineer" },
+  { label: "Data Engineer", value: "data-engineer" },
+  { label: "Data Analyst", value: "data-analyst" },
+  { label: "AI Engineer", value: "ai-engineer" },
   { label: "Data Scientist", value: "data-scientist" },
   { label: "Product Manager", value: "product-manager" },
   { label: "Designer", value: "designer" },
@@ -42,6 +45,9 @@ function SidePanel() {
   const [resumeId, setResumeId] = useState("");
   const [savedJobs, setSavedJobs] = useState([]);
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
+  const [dailyGoal, setDailyGoal] = useState(20);
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [applicationsToday, setApplicationsToday] = useState(0);
 
   const scrapeJobData = () => {
     chrome.runtime.sendMessage({ type: "GET_JOB_DATA" }, (response) => {
@@ -81,13 +87,94 @@ function SidePanel() {
     }
   };
 
+  // Daily Goals localStorage functions
+  const getDailyGoal = () => {
+    try {
+      const goal = localStorage.getItem('jobScout_dailyGoal');
+      return goal ? parseInt(goal) : 5;
+    } catch (error) {
+      console.error('Error getting daily goal:', error);
+      return 5;
+    }
+  };
+
+  const setDailyGoalStorage = (goal) => {
+    try {
+      localStorage.setItem('jobScout_dailyGoal', goal.toString());
+      setDailyGoal(goal);
+    } catch (error) {
+      console.error('Error setting daily goal:', error);
+    }
+  };
+
+  const getApplicationsToday = () => {
+    try {
+      const today = new Date().toDateString();
+      const stored = localStorage.getItem('jobScout_applicationsToday');
+      const data = stored ? JSON.parse(stored) : {};
+      
+      if (data.date === today) {
+        return data.count || 0;
+      } else {
+        // Reset for new day
+        localStorage.setItem('jobScout_applicationsToday', JSON.stringify({ date: today, count: 0 }));
+        return 0;
+      }
+    } catch (error) {
+      console.error('Error getting applications today:', error);
+      return 0;
+    }
+  };
+
+  const incrementApplicationsToday = () => {
+    try {
+      const today = new Date().toDateString();
+      const stored = localStorage.getItem('jobScout_applicationsToday');
+      const data = stored ? JSON.parse(stored) : { date: today, count: 0 };
+      
+      if (data.date === today) {
+        data.count += 1;
+      } else {
+        data.date = today;
+        data.count = 1;
+      }
+      
+      localStorage.setItem('jobScout_applicationsToday', JSON.stringify(data));
+      setApplicationsToday(data.count);
+    } catch (error) {
+      console.error('Error incrementing applications today:', error);
+    }
+  };
+
+  const getGoalProgress = () => {
+    const progress = (applicationsToday / dailyGoal) * 100;
+    return Math.min(progress, 100);
+  };
+
+  const resetDailyCount = () => {
+    try {
+      const today = new Date().toDateString();
+      localStorage.setItem('jobScout_applicationsToday', JSON.stringify({ date: today, count: 0 }));
+      setApplicationsToday(0);
+      showMessage('success', 'Daily count reset successfully!');
+    } catch (error) {
+      console.error('Error resetting daily count:', error);
+      showMessage('error', 'Failed to reset daily count');
+    }
+  };
+
   const fetchSavedJobs = async () => {
+    console.log('fetchSavedJobs called');
     setIsLoadingJobs(true);
     try {
+      console.log('Fetching from:', `${MCP_SERVER_URL}/jobs?limit=20&offset=0`);
       const response = await fetch(`${MCP_SERVER_URL}/jobs?limit=20&offset=0`);
+      console.log('Response status:', response.status);
       if (response.ok) {
         const result = await response.json();
-        setSavedJobs(result.jobs || result || []);
+        const jobs = result.jobs || result || [];
+        console.log('Fetched saved jobs:', jobs);
+        setSavedJobs(jobs);
       } else {
         console.error('Failed to fetch saved jobs:', response.status);
         setSavedJobs([]);
@@ -99,8 +186,6 @@ function SidePanel() {
       setIsLoadingJobs(false);
     }
   };
-
-  console.log("savedJobs", savedJobs);
 
   const refreshJobData = async () => {
     // Clear current job data first
@@ -167,6 +252,8 @@ function SidePanel() {
         // Safely access the job ID with fallbacks
         const jobId = result?.job?.id || result?.id || result?.job_id || 'Unknown';
         showMessage('success', `Job saved successfully! ID: ${jobId}`);
+        // Increment daily application count
+        incrementApplicationsToday();
         // Refresh job data to update existence status
         refreshJobData();
       } else {
@@ -381,6 +468,19 @@ function SidePanel() {
       setCategory(CATEGORY_OPTIONS[0].value);
     }
   }, [jobData]);
+
+  // Debug: Log savedJobs changes
+  useEffect(() => {
+    console.log('savedJobs state updated:', savedJobs);
+  }, [savedJobs]);
+
+  // Initialize daily goals and applications count
+  useEffect(() => {
+    const goal = getDailyGoal();
+    const todayCount = getApplicationsToday();
+    setDailyGoal(goal);
+    setApplicationsToday(todayCount);
+  }, []);
 
   return (
     <div style={{ maxWidth: 400, margin: '24px auto', background: '#fff', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', padding: 24, fontFamily: 'Inter, sans-serif' }}>
@@ -822,6 +922,109 @@ function SidePanel() {
             </p>
           </div>
 
+          {/* Daily Goals Section */}
+          <div style={{ 
+            background: 'linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%)', 
+            border: '1px solid #68d391', 
+            borderRadius: 12, 
+            padding: 16, 
+            marginBottom: 20,
+            boxShadow: '0 2px 8px rgba(104, 211, 145, 0.1)'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              marginBottom: 12 
+            }}>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#22543d' }}>
+                Daily Application Goal
+              </h3>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={resetDailyCount}
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.2)',
+                    color: '#c53030',
+                    border: '1px solid #fc8181',
+                    borderRadius: 6,
+                    padding: '4px 8px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                  title="Reset today's count"
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={() => setShowGoalModal(true)}
+                  style={{
+                    background: 'rgba(72, 187, 120, 0.2)',
+                    color: '#22543d',
+                    border: '1px solid #68d391',
+                    borderRadius: 6,
+                    padding: '4px 8px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Edit Goal
+                </button>
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                marginBottom: 8
+              }}>
+                <span style={{ fontSize: 14, color: '#22543d', fontWeight: 500 }}>
+                  {applicationsToday} / {dailyGoal} applications today
+                </span>
+                <span style={{ fontSize: 12, color: '#22543d' }}>
+                  {Math.round(getGoalProgress())}% complete
+                </span>
+              </div>
+              
+              {/* Progress Bar */}
+              <div style={{
+                width: '100%',
+                height: 8,
+                background: '#e2e8f0',
+                borderRadius: 4,
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  width: `${getGoalProgress()}%`,
+                  height: '100%',
+                  background: getGoalProgress() >= 100 
+                    ? 'linear-gradient(90deg, #48bb78 0%, #38a169 100%)' 
+                    : 'linear-gradient(90deg, #68d391 0%, #48bb78 100%)',
+                  borderRadius: 4,
+                  transition: 'width 0.3s ease'
+                }} />
+              </div>
+            </div>
+            
+            {getGoalProgress() >= 100 && (
+              <div style={{
+                background: '#48bb78',
+                color: 'white',
+                padding: '8px 12px',
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center'
+              }}>
+                🎉 Daily goal achieved! Great job!
+              </div>
+            )}
+          </div>
+
           {/* Saved Jobs Section */}
           <div style={{ marginBottom: 20 }}>
             <div style={{ 
@@ -901,7 +1104,7 @@ function SidePanel() {
                         {job.title || job.role || 'Untitled Position'}
                       </h4>
                       <span style={{
-                        background: job.applications?.[0]?.status === 'applied' ? '#48bb78' : '#ed8936',
+                        background: job.status === 'applied' ? '#48bb78' : '#ed8936',
                         color: 'white',
                         padding: '2px 6px',
                         borderRadius: 4,
@@ -909,7 +1112,7 @@ function SidePanel() {
                         fontWeight: 600,
                         textTransform: 'uppercase'
                       }}>
-                        {getStatusLabel(job.applications?.[0]?.status) || 'Pending'}
+                        {getStatusLabel(job?.status) || 'Pending'}
                       </span>
                     </div>
                     
@@ -1264,6 +1467,109 @@ function SidePanel() {
                 }}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Daily Goal Setting Modal */}
+      {showGoalModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: 12,
+            padding: 24,
+            maxWidth: 400,
+            width: '90%',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: '#2d3748' }}>Set Daily Application Goal</h3>
+              <button
+                onClick={() => setShowGoalModal(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 24,
+                  cursor: 'pointer',
+                  color: '#a0aec0'
+                }}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ fontWeight: 500, color: '#2d3748', display: 'block', marginBottom: 8 }}>
+                How many job applications do you want to submit per day?
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="50"
+                value={dailyGoal}
+                onChange={e => setDailyGoal(parseInt(e.target.value) || 1)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: 8,
+                  border: '1px solid #e2e8f0',
+                  fontSize: 16,
+                  fontWeight: 500
+                }}
+              />
+              <div style={{ marginTop: 8, fontSize: 12, color: '#718096' }}>
+                Recommended: 5-10 applications per day for best results
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowGoalModal(false)}
+                style={{
+                  background: '#e2e8f0',
+                  color: '#4a5568',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setDailyGoalStorage(dailyGoal);
+                  setShowGoalModal(false);
+                  showMessage('success', `Daily goal updated to ${dailyGoal} applications!`);
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 4px rgba(72, 187, 120, 0.2)'
+                }}
+              >
+                Save Goal
               </button>
             </div>
           </div>
