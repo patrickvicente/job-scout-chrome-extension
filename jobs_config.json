@@ -169,7 +169,6 @@
       }
     },
     "scraper": {
-      "jobs.ashbyhq.com": {},
       "jobs.ashbyhq.com/*/*": {
         "job": {
           "role": "h1",
