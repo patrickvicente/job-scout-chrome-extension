@@ -16,6 +16,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Return true to indicate async response
     return true;
   }
+  // Extract raw HTML from the active tab
+  if (message.type === "EXTRACT_RAW_HTML") {
+    chrome.tabs.query({ active: true, currentWindow: true}, (tabs) => {
+      const tabId = tabs[0]?.id;
+      if (tabId) {
+        chrome.tabs.sendMessage(tabId, { type: "EXTRACT_RAW_HTML" }, (response) => {
+          sendResponse(response);
+        });
+      } else {
+        sendResponse({ success: false, message: 'No active tab found' });
+      }
+    });
+    return true; // Keep the message channel open for async response
+  }
 });
 
 // Open the side panel when the extension icon is clicked

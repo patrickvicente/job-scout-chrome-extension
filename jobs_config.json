@@ -238,7 +238,29 @@
           "location": "#jdp-pane .data-details > span:nth-child(2)"
         }
       },
-      "linkedin.com/": {},
+      "linkedin.com/jobs/view": {
+        "job": {
+          "title": ".job-details-jobs-unified-top-card__job-title h1",
+          "company": ".job-details-jobs-unified-top-card__company-name a",
+          "location": ".job-details-jobs-unified-top-card__primary-description-container .tvm__text--low-emphasis",
+          "description": [
+            ["domSelect", "#job-details"],
+            ["domText"],
+            "defaultString"
+          ],
+          "work_mode": ".job-details-fit-level-preferences button:nth-child(1) strong",
+          "work_type": ".job-details-fit-level-preferences button:nth-child(2) strong",
+          "salary": "#SALARY",
+          "date_posted": "div.job-details-jobs-unified-top-card__primary-description-container > div > span > span:nth-child(3) > span",
+          "poster_name": ".hirer-card__hirer-information a span strong",
+          "poster_url": [
+            ["domSelect", ".hirer-card__hirer-information a"],
+            ["domGetAttribute", "href"],
+            "defaultString"
+          ],
+          "poster_title": ".hirer-card__hirer-information .text-body-small"
+        }
+      },
       "idealist.org/": {},
       "idealist.org/.*/.*-job/": {
         "job": {
@@ -998,12 +1020,7 @@
         "job": {
           "title": "[data-automation='job-detail-title']",
           "company": "[data-automation='advertiser-name']",
-          "location": [
-            ["jqSelect", "[data-sticky='job-details-page'] span:first-of-type"],
-            ["jqGet", 1],
-            "domText",
-            "defaultString"
-          ],
+          "location": "[data-automation='job-detail-location']",
           "description": "[data-automation='jobAdDetails']"
         }
       },
