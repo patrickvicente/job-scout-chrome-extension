@@ -305,6 +305,57 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ success: true });
     return true;
   }
+  if (message.type === "INJECT_COVER_LETTER") {
+    try {
+      // Find LinkedIn's cover letter textarea
+      const coverLetterTextarea = document.querySelector('textarea[aria-label="Cover letter"]');
+      
+      if (coverLetterTextarea) {
+        // Set the value and trigger input event to ensure LinkedIn's form validation works
+        coverLetterTextarea.value = message.coverLetter;
+        coverLetterTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+        coverLetterTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        // Focus the textarea
+        coverLetterTextarea.focus();
+        
+        sendResponse({ success: true, message: 'Cover letter injected successfully' });
+      } else {
+        // Try alternative selectors for LinkedIn's cover letter field
+        const alternativeSelectors = [
+          'textarea[id*="cover-letter"]',
+          'textarea[id*="coverletter"]',
+          'textarea[placeholder*="cover"]',
+          'textarea[placeholder*="Cover"]',
+          '.artdeco-text-input__textarea',
+          'textarea.fb-multiline-text'
+        ];
+        
+        let found = false;
+        for (const selector of alternativeSelectors) {
+          const textarea = document.querySelector(selector);
+          if (textarea) {
+            textarea.value = message.coverLetter;
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            textarea.dispatchEvent(new Event('change', { bubbles: true }));
+            textarea.focus();
+            found = true;
+            break;
+          }
+        }
+        
+        if (found) {
+          sendResponse({ success: true, message: 'Cover letter injected using alternative selector' });
+        } else {
+          sendResponse({ success: false, message: 'Cover letter textarea not found on page' });
+        }
+      }
+    } catch (error) {
+      console.error('Error injecting cover letter:', error);
+      sendResponse({ success: false, message: `Error: ${error.message}` });
+    }
+    return true;
+  }
 });
 
 extractAndSendJobData();
