@@ -240,7 +240,7 @@ async function extractAndSendJobData() {
       
       console.log("Job existence check:", data);
     } catch (error) {
-      console.warn("Failed to check job existence:", error);
+      console.log("Failed to check job existence:", error);
       // Continue without existence check if it fails
       jobData.exists = false;
     }

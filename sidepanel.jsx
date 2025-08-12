@@ -13,15 +13,19 @@ const STATUS_OPTIONS = [
 
 const CATEGORY_OPTIONS = [
   { label: "Other", value: "other" },
-  { label: "Software Engineer", value: "software-engineer" },
+  { label: "Sales", value: "sales" },
   { label: "Data Engineer", value: "data-engineer" },
+  { label: "Software Engineer", value: "software-engineer" },
+  { label: "Barista", value: "barista" },
+  { label: "AI Engineer", value: "ai-engineer" },
+  { label: "ML Engineer", value: "ml-engineer" },
   { label: "Data Analyst", value: "data-analyst" },
   { label: "AI Engineer", value: "ai-engineer" },
   { label: "Data Scientist", value: "data-scientist" },
   { label: "Product Manager", value: "product-manager" },
   { label: "Designer", value: "designer" },
   { label: "Marketing", value: "marketing" },
-  { label: "Sales", value: "sales" },
+  
   { label: "Finance", value: "finance" },
   { label: "HR", value: "hr" },
   { label: "Legal", value: "legal" },
@@ -208,6 +212,10 @@ function SidePanel() {
 
   const handleSave = async () => {
     setIsLoading(true);
+    console.log('�� handleSave called!');
+    console.log('Current jobData:', jobData);
+    console.log('Current status:', status);
+    console.log('Current notes:', notes);
     const payload = {
       job: {
         title: jobData.title || jobData.role,
@@ -219,6 +227,7 @@ function SidePanel() {
         url: jobData.url,
         source: jobData.source,
         category: category,
+        html_content: jobData.html_content,
         method: "manual",
       },
       application: {

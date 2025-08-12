@@ -1015,7 +1015,7 @@
           "compensation": "[data-test='JobListingSlideIn'] .text-lg.font-\\[500\\]:nth-child(2)"
         }
       },
-      "seek.com.au/job/": {
+      "seek.com.au/job/(?!.*/apply).*": {
         "job": {
           "title": "[data-automation='job-detail-title']",
           "company": "[data-automation='advertiser-name']",
